@@ -1,4 +1,4 @@
-NAME   := 01.exe
+NAME   := main.exe
 
 #  INGREDIENTS
 SRCS   := main.c
