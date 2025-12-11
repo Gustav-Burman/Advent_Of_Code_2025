@@ -2,67 +2,75 @@
 #include "fstream"
 #include "vector"
 #include "regex"
+#include "iterator"
 
-void readData(std::string path);
+std::vector<std::string> readLines(std::string path);
 
 int main()
 {
-    // readData("test_input.txt");
+    // State variables
     int dial{50};
-    int count{0};
+    int noOfZeros{0};
+
+    // Constants
+    constexpr int DIAL_MAX{100};
+    constexpr int target = 0;
     const char left{'L'};
     const char right{'R'};
-    const int DIAL_MAX {100};
-    const int target = 0;
+    const std::string inputFile{"input.txt"};
+    const std::regex pattern{"([A-Za-z])([0-9]+)"};
 
-    std::ifstream inputFile{"test_input.txt"};
-
-    std::vector<int> numbersV{};
-    std::vector<char> charactersV{};
-    std::string strInput{};
-
-    // Regex
-    std::regex pattern{"([A-Za-z])([0-9]+)"};
-
-    while (std::getline(inputFile, strInput))
+    std::vector<std::string> strInputV{readLines(inputFile)};
+    if (strInputV.empty())
     {
-        std::smatch match;
-        if (std::regex_match(strInput, match, pattern))
-        {
-            // charactersV.push_back(match[1].str()[0]);
-            // numbersV.push_back(stoi(match[2]));
-            const int rotation{stoi(match[2])};
-            const char direction{match[1].str()[0]};
-            if (direction == left)
-            {
-                dial = dial > rotation ? (dial - rotation) :
-                       -1 * (dial - rotation) % DIAL_MAX;
-            }
-            else if (direction == right)
-            {
-                dial = (dial + rotation) % DIAL_MAX;
-            }
-            count += dial == target;
-        }
+        std::cout << "Input is empty\n";
+        return 1;
     }
-    std::cout << "The password is: " << count << "\n";
+
+    std::smatch match;
+
+    for (size_t i = 0; i < strInputV.size(); i++)
+    {
+        const bool matchFound = std::regex_match(strInputV[i], match, pattern);
+        const int rotations = stoi(match[2]);
+        const char direction = match[1].str()[0];
+
+        if (matchFound && direction == right)
+        {
+            dial = (dial + rotations) % DIAL_MAX;
+        }
+        else if (matchFound)
+        {
+            dial = dial > rotations ? dial - rotations : DIAL_MAX - (rotations - dial) % DIAL_MAX;
+            dial = dial == DIAL_MAX ? 0 : dial;
+        }
+        noOfZeros += dial == 0;
+    }
+    std::cout << "Number of zeros: " << noOfZeros;
+
     return 0;
 }
 
-void readData(std::string path)
+/*
+    ** Function: readLines **
+    Reads a textfile and puts every line in a vector<string>
+*/
+std::vector<std::string> readLines(std::string path)
 {
-    std::ifstream inf{path};
+    std::ifstream inFile{path};
+    std::vector<std::string> lines{};
+    std::string line{};
 
-    if (!inf)
+    if (!inFile)
     {
         std::cerr << path << " couldn't be read\n";
-        return;
+        return lines;
     }
-    std::string strInput{};
-    while (std::getline(inf, strInput))
+
+    while (std::getline(inFile, line))
     {
-        std::cout << strInput << '\n';
+        lines.push_back(line);
     }
-    
-    return;
+
+    return lines;
 }
