@@ -1,7 +1,7 @@
 NAME_01   := 01/main.exe
 
 #  INGREDIENTS
-DIRS    := 01
+DIRS    := 01 02
 .PHONY: $(DIRS)
 $(DIRS): %: %/main.exe
 
@@ -38,25 +38,3 @@ fclean: clean
 	$(RM) $(EXES)
 
 re: fclean all
-
-
-
-# all: $(NAME)
-# $(NAME): $(OBJS)
-# 	$(CC) $(OBJS) -o $(NAME)
-
-# 01: $(NAME_01)
-# $(NAME_01): $(OBJS_01)
-# 	$(CC) $(OBJS_01) -o $(NAME_01)
-
-# clean:
-# 	$(RM) $(OBJS)
-
-# fclean: clean
-# 	$(RM) $(NAME)
-
-# re:
-# 	$(MAKE) fclean
-# 	$(MAKE) all
-
-# .PHONY: clean fclean
