@@ -4,8 +4,6 @@
 #include <cstdlib>
 #include "../lib/lib.h"
 
-std::vector<std::string> readLines(std::string path);
-
 int main()
 {
     // State variables
@@ -18,7 +16,7 @@ int main()
     constexpr int target = 0;
     const char left{'L'};
     const char right{'R'};
-    const std::string inputFile{"../01/input.txt"};
+    const std::string inputFile{"01/input.txt"};
     const std::regex pattern{"([A-Za-z])([0-9]+)"};
 
     std::vector<std::string> strInputV{Library::readLines(inputFile)};
