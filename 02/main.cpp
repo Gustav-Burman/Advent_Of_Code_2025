@@ -3,32 +3,55 @@
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <chrono>
+#include <omp.h>
 
 // Local function declarations
 std::vector<long long int> findRepeatedDigits(std::vector<long long int> range);
 
 int main()
 {
+    omp_set_dynamic(0);
+    omp_set_num_threads(4);
     std::vector<std::string> rawData {Library::readLines("02/input.txt")};
     const std::vector<std::string> rangesStr {Library::splitString<std::string>(rawData[0], ',')};
     
-    std::vector<long long int> repeatedDigits;
-    for (const auto& interval : rangesStr)
+    auto t1 = std::chrono::high_resolution_clock::now();
+
+    for (size_t i = 0; i < 5; i++)
     {
-        // std::cout << "interval: " << interval << "\n";
-        std::vector<long long int> range {Library::splitString<long long int>(interval, '-')};
-        std::vector<long long int> temp {findRepeatedDigits(range)};
-        repeatedDigits.insert(repeatedDigits.end(), temp.begin(), temp.end());
+        std::vector<long long int> repeatedDigits;
+
+        #pragma omp parallel if(1)
+        {
+            std::vector<long long int> local;
+
+            #pragma omp for nowait if(1)
+            for (const auto& interval : rangesStr)
+            {
+                // std::cout << "interval: " << interval << "\n";
+                std::vector<long long int> range {Library::splitString<long long int>(interval, '-')};
+                // local = findRepeatedDigits(range);
+                std::vector<long long int> temp {findRepeatedDigits(range)};
+                local.insert(local.end(), temp.begin(), temp.end());
+            }
+            int threadId {omp_get_thread_num()};
+            int noThreads {omp_get_num_threads()};
+
+            #pragma omp critical
+            std::cout << "Thread: " << threadId << "/" << noThreads << "\n";
+
+            #pragma omp critical
+            repeatedDigits.insert(repeatedDigits.end(), local.begin(), local.end());
+        }
+        
+        auto sum {std::reduce(repeatedDigits.begin(), repeatedDigits.end())};
+        std::cout << "Sum of IDs: " << sum << "\n";
     }
-    
-    // for (const auto& digit : repeatedDigits)
-    // {
-    //     std::cout << "Digit " << digit << "\n";
-    // }
-    // std::cout << "Size of long " << sizeof(int) << "\n";
-    auto sum {std::reduce(repeatedDigits.begin(), repeatedDigits.end())};
-    std::cout << "Sum of IDs: " << sum << "\n";
-    
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+    std::cout << "Total execution time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << "\n";
+
     return 0;
 }
 
@@ -60,15 +83,15 @@ bool compareSubNumbers(const std::string number, const int noSubnumber, const in
 // Local function definitions
 bool isRepeatedNumber(long long int x)
 {
-    const std::vector<int> PRIMES {1, 2, 3, 4, 5};
+    const std::vector<int> DIVISORS {1, 2, 3, 4, 5};
     const std::string numberString {std::to_string(x)};
     int len = numberString.length();
     bool isRepeated {false};
-    for (const auto& prime : PRIMES)
+    for (const auto& divisor : DIVISORS)
     {
-        if (len % prime == 0 && prime < len)
+        if (len % divisor == 0 && divisor < len)
         {
-            isRepeated = isRepeated ? isRepeated : compareSubNumbers(numberString, len / prime, len);
+            isRepeated = isRepeated ? isRepeated : compareSubNumbers(numberString, len / divisor, len);
         }
     }
     return isRepeated;

@@ -6,7 +6,8 @@ DIRS    := 01 02
 $(DIRS): %: %/main.exe
 
 CC      := g++
-CFLAGS  := -Wall -Werror -Wextra
+CFLAGS  := -Wall -Werror -Wextra -fopenmp
+LDFLAGS := -fopenmp
 
 SRCS    := main.cpp
 # OBJS    := 01/main.o
@@ -23,7 +24,7 @@ all: $(EXES)
 
 # Link rule
 %/main.exe: %/main.o $(LIB_OBJ)
-	$(CC) $^ -o $@
+	$(CC) $(LDFLAGS) $^ -o $@
 
 # Compile rule
 %/main.o: $(SRCS)
