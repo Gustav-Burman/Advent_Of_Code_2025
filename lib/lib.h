@@ -5,25 +5,22 @@
 #include <string>
 #include <sstream>
 #include <charconv>
+#include <stdint.h>
 
 namespace Library
 {
+    // Variable definitions
+    #define S64 int64_t
+
+
     /*
     ** Function: readLines **
     Reads a textfile and puts every line in a vector<string>
     */
     std::vector<std::string> readLines(std::string path);
 
-    // template <typename T>
-    // bool svToNum(const std::string_view &view, T value);
-
-
-    // template <typename T>
-    // std::vector<T> splitString(const std::string& str, const char delimiter);
-
 
     // Function definitions
-
     /*
     ** Function: splitString
     Splits a string input based on a delimiter.
