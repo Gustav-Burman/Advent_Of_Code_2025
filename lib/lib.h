@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <charconv>
 
 namespace Library
 {
@@ -13,17 +14,24 @@ namespace Library
     */
     std::vector<std::string> readLines(std::string path);
 
+    // template <typename T>
+    // bool svToNum(const std::string_view &view, T value);
+
+
+    // template <typename T>
+    // std::vector<T> splitString(const std::string& str, const char delimiter);
+
+
+    // Function definitions
+
     /*
     ** Function: splitString
     Splits a string input based on a delimiter.
 
     return: A vector with all the subtokens from the string 
     */
-    template <typename T> std::vector<T> splitString(const std::string& str, const char delimiter);
-
-
-    // Function definitions
-    template <typename T> std::vector<T> splitString(const std::string& str, const char delimiter)
+    template <typename T>
+    std::vector<T> splitString(const std::string& str, const char delimiter)
     {
         std::vector<T> splits;
         int startIndex {0};
@@ -53,6 +61,31 @@ namespace Library
         }
 
         return splits;
+    }
+
+    template <typename T>
+    bool svToNum(const std::string_view& view, T& value)
+    {
+        if (view.empty())
+        {
+            return false;
+        }
+
+        const char* first {view.data()};
+        const char* last {view.data() + view.length()};
+
+        std::from_chars_result res {std::from_chars(first, last, value)};
+
+        if (res.ec != std::errc())
+        {
+            return false;
+        }
+        if (res.ptr != last)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
 

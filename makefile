@@ -1,7 +1,5 @@
-NAME_01   := 01/main.exe
-
 #  INGREDIENTS
-DIRS    := 01 02
+DIRS    := 01 02 03
 .PHONY: $(DIRS)
 $(DIRS): %: %/main.exe
 
