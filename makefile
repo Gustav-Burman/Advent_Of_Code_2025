@@ -1,5 +1,5 @@
 #  INGREDIENTS
-DIRS    := 01 02 03
+DIRS    := 01 02 03 04
 .PHONY: $(DIRS)
 $(DIRS): %: %/main.exe
 
